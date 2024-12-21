@@ -11,6 +11,7 @@ test('Kaleidoscope Applicant Application process', async ({ page }) => {
     let userPassword = `${userFirstName}@${userLastName}_123`;
     let userPhone = faker.phone.number({ style: 'national' });
 
+    const application = new ApplicationPage(page);
     await test.step("Register a new User", async () => {
         await page.goto('/login');
         const registerPage = new RegisterPage(page);
@@ -22,14 +23,15 @@ test('Kaleidoscope Applicant Application process', async ({ page }) => {
         await expect(popup).toBeVisible();
     })
 
-    await test.step("Begin a new Application for the provided Program", async () => {
+    await test.step("Begin a new Application & Fill out all Required Fields", async () => {
         await page.goto("/program/sdet-test-scholarship");
-        const application = new ApplicationPage(page);
         await application.beginBtn.waitFor({ state: 'visible', timeout: 30000 });
         await application.beginBtn.click();
         application.getToKnowYouTitle.waitFor({ state: 'visible', timeout: 25000 });
         await application.fillGetToKnowYouFormAndNext("Test Street", "Colorado", "Test City", "12345", "India");
+    })
 
+    await test.step("Page 2: Validate & Finish Activities Page", async () => {
         //click next page without adding any activties to validate atleast two entries are needed
         await application.clickNextBtn();
         await expect.soft(page.getByText('Please add at least 2 entries')).toBeVisible();
@@ -45,6 +47,12 @@ test('Kaleidoscope Applicant Application process', async ({ page }) => {
             await application.addActivity(activity.activityName, activity.activityYears, activity.recognitions, activity.description);
         }
 
+        await application.clickNextBtn();
+    })
+
+    await test.step("Page 3: High School Information", async () => {
+        await application.enterHighSchoolInformation("Test School", "Random Address", "Some City", "Colorado", "12345", "9", "2023");
+        await application.uploadTranscript();
         await application.clickNextBtn();
     })
 });

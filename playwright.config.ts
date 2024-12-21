@@ -32,7 +32,7 @@ export default defineConfig({
                 baseURL: `https://apply.mykaleidoscope.com`,
                 launchOptions: {
                     args: [`--start-maximized`, `--window-size=1920,1080`],
-                    slowMo: 250
+                    slowMo: 500
                 },
                 channel: `chrome`
             },
