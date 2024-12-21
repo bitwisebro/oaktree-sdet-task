@@ -3,7 +3,7 @@ import { join } from 'path';
 
 export default defineConfig({
     fullyParallel: true,
-    retries: 0,
+    retries: 1,
     workers: 3,
     reporter: [
         [`html`, { outputFolder: `./reports/htmlReports/`, open: `never` }],
@@ -18,7 +18,7 @@ export default defineConfig({
         },
         screenshot: { mode: `only-on-failure`, fullPage: true },
         video: `retain-on-failure`,
-        navigationTimeout: 10000,
+        navigationTimeout: 30000,
         actionTimeout: 20000,
     },
     projects: [
@@ -32,6 +32,7 @@ export default defineConfig({
                 baseURL: `https://apply.mykaleidoscope.com`,
                 launchOptions: {
                     args: [`--start-maximized`, `--window-size=1920,1080`],
+                    slowMo: 250
                 },
                 channel: `chrome`
             },

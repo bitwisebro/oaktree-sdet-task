@@ -1,5 +1,4 @@
-import { fi } from '@faker-js/faker/.';
-import { expect, type Locator, type Page } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
 
 export default class RegisterPage {
     constructor(readonly page: Page) { }
