@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, Locator, test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import RegisterPage from '../pages/register.page';
 import ApplicationPage from '../pages/application.page';
@@ -23,20 +23,24 @@ test('Kaleidoscope Applicant Application process', async ({ page }) => {
         await expect(popup).toBeVisible();
     })
 
-    await test.step("Begin a new Application & Fill out all Required Fields", async () => {
+    await test.step("Page 1: Lets get to know you!", async () => {
         await page.goto("/program/sdet-test-scholarship");
+
+        // Begin a new Application
         await application.beginBtn.waitFor({ state: 'visible', timeout: 30000 });
         await application.beginBtn.click();
         application.getToKnowYouTitle.waitFor({ state: 'visible', timeout: 25000 });
+
+        // Fill out all Required Fields
         await application.fillGetToKnowYouFormAndNext("Test Street", "Colorado", "Test City", "12345", "India");
     })
 
     await test.step("Page 2: Validate & Finish Activities Page", async () => {
-        //click next page without adding any activties to validate atleast two entries are needed
+        // Validate that at least 2 Extracurricular Activities are required, when not providing enough.
         await application.clickNextBtn();
         await expect.soft(page.getByText('Please add at least 2 entries')).toBeVisible();
 
-        //Add 4 activities
+        // Finish page by providing 4 Activities
         const activities = [
             { activityName: "Activity 1", activityYears: "11", recognitions: "Recognition 1", description: "Great Description 1" },
             { activityName: "Activity 2", activityYears: "12", recognitions: "Recognition 2", description: "Great Description 2" },
@@ -51,8 +55,46 @@ test('Kaleidoscope Applicant Application process', async ({ page }) => {
     })
 
     await test.step("Page 3: High School Information", async () => {
+        // Fill out the form
         await application.enterHighSchoolInformation("Test School", "Random Address", "Some City", "Colorado", "12345", "9", "2023");
+
+        // Upload the provided School Transcript
         await application.uploadTranscript();
+        await application.clickNextBtn();
+    })
+
+    await test.step("Page 4: Essay", async () => {
+        // Validate that each option under "Please select the essay types you want to write about” shows an essay box.
+        const essayMap = [
+            { option: "Cars", boxName: "Essay about Cars" },
+            { option: "Animals", boxName: "Essay about Animals" },
+            { option: "School", boxName: "Essay about School" },
+            { option: "Other", boxName: "Provide an essay about any topic" }
+        ]
+
+        for (const essay of essayMap) {
+            const checkBox: Locator = page.getByLabel(essay.option, { exact: true });
+            await checkBox.check();
+
+            const textAreaField: Locator = page.locator(`//label[text()='${essay.boxName}']/parent::div//textarea`);
+            await expect.soft(textAreaField).toBeVisible();
+            await checkBox.uncheck();
+        }
+
+        // Select Only Animals and School
+        const selectOptionAndAddData = [
+            { option: "Animals", boxName: "Essay about Animals", answer: faker.string.alpha(25) },
+            { option: "School", boxName: "Essay about School", answer: faker.string.alpha(25) }
+        ]
+
+        for (const option of selectOptionAndAddData) {
+            const checkBox: Locator = page.getByLabel(option.option, { exact: true });
+            await checkBox.check();
+
+            const textAreaField: Locator = page.locator(`//label[text()='${option.boxName}']/parent::div//textarea`);
+            await expect.soft(textAreaField).toBeVisible();
+            await textAreaField.fill(option.answer);
+        }
         await application.clickNextBtn();
     })
 });

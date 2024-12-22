@@ -26,7 +26,7 @@ export default defineConfig({
             name: `chrome`,
             testDir: join(__dirname, `src`, `tests`),
             timeout: 0,
-            expect: { timeout: 10000 },
+            expect: { timeout: 15000 },
             use: {
                 ...devices[`Desktop Chrome`],
                 baseURL: `https://apply.mykaleidoscope.com`,

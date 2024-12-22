@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "report": "npx playwright show-report reports/htmlReports --port 0"
+  },
   "keywords": [],
   "author": "Gaurav Jani",
   "license": "ISC",

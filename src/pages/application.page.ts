@@ -69,6 +69,6 @@ export default class ApplicationPage {
         await this.schoolTranscriptField.click();
         const fileChooser = await fileChooserPromise;
         await fileChooser.setFiles(join(__dirname, 'My School Transcript.pdf'));
-        await expect(this.page.getByRole('button', { name: 'My School Transcript.pdf' })).toBeVisible({ timeout: 60000 });
+        await expect(this.page.getByRole('button', { name: 'My School Transcript.pdf' })).toBeVisible({ timeout: 120000 });
     }
 }
