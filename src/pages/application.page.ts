@@ -7,6 +7,8 @@ export default class ApplicationPage {
     public readonly beginBtn: Locator = this.page.getByRole('link', { name: 'Begin' });
     public readonly getToKnowYouTitle: Locator = this.page.locator("//*[text()='Lets get to know you!']");
     public readonly addEntryBtn: Locator = this.page.getByRole('button', { name: 'Add Entry', exact: true });
+    public readonly submitBtn: Locator = this.page.getByRole('button', { name: 'Submit' });
+    public readonly editBtn: Locator = this.page.locator("//span[text()='Edit']");
 
     private readonly streetAddressField: Locator = this.page.getByPlaceholder('Enter your street address');
     private readonly stateField: Locator = this.page.getByPlaceholder('Enter your state');
@@ -41,10 +43,11 @@ export default class ApplicationPage {
 
     async clickNextBtn() {
         await this.page.waitForTimeout(5000);
-        await this.nextPageBtn.click();
+        await this.nextPageBtn.click({ timeout: 60000 });
     }
 
     async addActivity(activityName: string, yrs: string, recognitions: string, description: string) {
+        await this.addEntryBtn.waitFor({ state: 'visible', timeout: 60000 })
         await this.addEntryBtn.click();
         await this.activityNameField.fill(activityName);
         await this.activityYrsField.fill(yrs);
@@ -70,5 +73,17 @@ export default class ApplicationPage {
         const fileChooser = await fileChooserPromise;
         await fileChooser.setFiles(join(__dirname, 'My School Transcript.pdf'));
         await expect(this.page.getByRole('button', { name: 'My School Transcript.pdf' })).toBeVisible({ timeout: 120000 });
+    }
+
+    async expandTab(tabName: string) {
+        const tabLocator: Locator = this.page.getByRole('button', { name: tabName });
+        await tabLocator.click();
+    }
+
+    async getApplicantDatafromUI(fieldName: string, locatorIndex?: number) {
+        locatorIndex = locatorIndex ?? 0;
+        const textLocator: Locator = this.page.locator(`//*[contains(text(),'${fieldName}')]/following-sibling::p`).nth(locatorIndex);
+        const text = await textLocator.textContent();
+        return text;
     }
 }

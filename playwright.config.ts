@@ -3,7 +3,7 @@ import { join } from 'path';
 
 export default defineConfig({
     fullyParallel: true,
-    retries: 1,
+    retries: 0,
     workers: 3,
     reporter: [
         [`html`, { outputFolder: `./reports/htmlReports/`, open: `never` }],
